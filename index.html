@@ -4,37 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Liste d'anniversaire — édition Warhammer</title>
-<meta name="description" content="Liste d'anniversaire interactive, sur le thème Warhammer.">
+<meta name="description" content="MultiPhysxWorkbench - module selection.">
 
-<!--
-  ============================================================================
-  LISTE D'ANNIVERSAIRE INTERACTIVE — THÈME WARHAMMER
-  ============================================================================
-  Fichier unique : tout le CSS et le JavaScript sont dans cette page.
-  Aucune dépendance externe hormis les polices Google Fonts ci-dessous.
-
-  CE QUE TU DOIS REMPLACER (cherche ces mots dans le fichier) :
-    <IMAGE_FOND>        → image de fond du site (dossier /images/)
-    <warpaint_fanatic_mega_png> à <IMAGE_8> → visuels des produits (dossier /images/)
-    <warpaint_fanatic_mega> à <LIEN_AFFILIE_8> → liens d'achat / affiliés
-    <REF_LEBONCOIN_1> à <REF_LEBONCOIN_5> → exemples de recherches Leboncoin
-    <NOM_FIGURINE>      → le nom de la figurine héros que tu choisiras
-
-  Tout se trouve regroupé dans l'objet JavaScript "arbreDecision", plus bas.
-  Un exemple commenté, en fin de script, montre comment ajouter une branche.
-  ============================================================================
--->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
 <style>
-/* ==========================================================================
-   1. TOKENS — palette, typographie, rythme
-   Thème retenu : « reliquaire impérial » — noir profond, or vieilli,
-   rouge sang en accent rare, parchemin pour les fiches produits.
-   ========================================================================== */
+
 :root{
   --noir-abysse:#0a0908;
   --noir-basalte:#171310;
@@ -63,7 +41,6 @@ body{
   line-height:1.6;
   color:var(--texte-clair);
   background-color:var(--noir-abysse);
-  /* REMPLACE ICI : dépose ton image dans /images/ et remplace <IMAGE_FOND> */
   background-image:
     linear-gradient(to bottom, rgba(10,9,8,.55), rgba(10,9,8,.85)),
     url("images/<IMAGE_FOND>");
@@ -243,6 +220,15 @@ a:focus-visible, button:focus-visible{
   border-bottom:1px solid var(--parchemin-ombre);
 }
 .produit-image.image-manquante{ object-fit:contain; background:var(--noir-basalte); }
+
+/* Illustration insérée au fil d'un texte (voir <NOM_FICHIER.jpg> dans un "intro") */
+.illustration-intro{ margin:1.4rem 0; }
+.image-intro{
+  width:100%; object-fit:cover;
+  border:1px solid var(--or-vieilli);
+  box-shadow:0 0 0 3px var(--noir-abysse), 0 0 0 4px var(--or-vieilli);
+}
+.image-intro.image-manquante{ object-fit:contain; background:var(--noir-basalte); }
 .carte-produit .contenu-carte{
   padding:1.1rem 1.2rem 1.3rem; display:flex; flex-direction:column; flex:1;
 }
@@ -282,8 +268,8 @@ a:focus-visible, button:focus-visible{
 
 <header class="entete">
   <svg class="orne" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.5 7.5H22l-6 4.6 2.3 7.4L12 15l-6.3 4.5 2.3-7.4L2 7.5h7.5z"/></svg>
-  <h1 class="titre-principal">L'Autel du Peintre</h1>
-  <p class="sous-titre">Liste d'anniversaire — réponds aux questions pour découvrir le présent qui convient.</p>
+  <h1 class="titre-principal">La liste du petit peintre</h1>
+  <p class="sous-titre">Athu liste d'anniversaire</p>
 </header>
 
 <nav class="fil-ariane" id="fil-ariane" aria-label="Fil d'Ariane"></nav>
@@ -293,58 +279,245 @@ a:focus-visible, button:focus-visible{
 </main>
 
 <footer class="pied-page">
-  <p>Composé pour l'atelier de peinture. Que la Machine-Esprit veille sur vos pinceaux.</p>
+  <p>Que l'Esprit de la Machine veille sur nos pinceaux.</p>
 </footer>
 
 <script>
-/* ============================================================================
-   ARBRE DE DÉCISION
-   ----------------------------------------------------------------------------
-   Pense-le comme un dictionnaire Python imbriqué : chaque noeud est un objet.
-
-   Un noeud "branche" (qui pose une nouvelle question) contient :
-     - id        : identifiant unique (texte)
-     - label     : texte affiché sur la tuile qui mène à ce noeud
-     - question  : la question affichée une fois sur ce noeud
-     - intro     : (optionnel) une phrase d'introduction sous la question
-     - enfants   : tableau des noeuds suivants (branches ou feuilles)
-
-   Un noeud "feuille" (qui affiche un résultat, en bout de branche) contient :
-     - id, label (comme ci-dessus)
-     - intro     : (optionnel) texte d'introduction
-     - citation  : (optionnel) { texte, auteur } — encart de citation
-     - clinOeil  : (optionnel) une phrase en aparté, mise en valeur
-     - produits  : (optionnel) tableau de { nom, description, image, lien, note }
-     - references: (optionnel) tableau de textes (pistes de recherche)
-     - lienRecherche : (optionnel) { texte, url } — un lien de recherche générique
-     - note      : (optionnel) remarque finale, sous le reste du contenu
-
-   REMPLACE ICI les textes, images et liens directement dans cet objet.
-   Une feuille sans "enfants" est automatiquement traitée comme un résultat final.
-   ============================================================================ */
 const arbreDecision = {
   id:"accueil",
   label:"Accueil",
   question:"Que choisir ?",
   enfants:[
     {
+		id:"Intro",
+      label:"Pourquoi cette liste ?",
+      intro: "Avant tout, j'aimerais limiter au maximum mon empreinte sociale et environnementale. "+
+				 "Pour cela, je veux privilégier les magasins locaux, explorer la seconde main autant que possible, "+
+				 "et n'acheter que lorsque cela a du sens, jamais simplement parce qu'on le peut. " +
+      		 "À Noël 2025, j'ai peint cette figurine de dragon zombie pour le concours de peinture Squidmar Open. "+
+      		 "Depuis, je cherche à faire progresser ma peinture et essayer de (me)) raconter quelque chose à travers elle. "+
+      		 "<figurine_dragon_zombie.png>" +
+      		 "C'est ce qui inspire cette liste d'anniversaire. Il y a plusieurs pistes, et je ne veux pas simplement un objet : "+
+      		 "je cherche surtout de quoi raconter une histoire et construire une scène qui ait du sens. "+
+      		 "Ce n'est pas qu'une question de peinture ou de modèle de figurine. "+
+      		 "Cette figurine ci-dessous, d'Albert Moretó Font, est considérée comme la plus belle pièce jamais présentée "+
+      		 "dans un concours Warhammer, toutes éditions confondues — pour l'instant. <b49c16c4-79b9-4691-b992-2fad569a3086.jpg>" +
+      		 "Pourtant, la figurine de ce mage de 2002 est une catastrophe initialement. Mais la composition, la vibrance "+
+				 "des couleurs, l'histoire suggérée, la folie dans le regard, la densité de détails... cette pièce reste "+
+				 "la plus belle jamais réalisée, et cela ne doit rien aux produits utilisés. "
+      },
+    
+    {
+      id:"choix3",
+      label:"Nourrir l'imaginaire pour peindre",
+      intro:"L'univers de warhammer est si vaste et réparti sur plusieurs gammes de jeux : warhammer fantasy, warhammer 40 000, warhammer Horus Heresy. Nourrir l'imaginaire d'histoires, de photos d'armée, de héros épiques et intrépide est le meilleur moteur de création. Les jeux vidéos sont aussi ma première source d'inspiration, comme mélanger Warcraft, The Witcher dans une bataille Warhammer !",
+      question:"Comment nourrir l'imaginaire pour toujours plus de projets peinture farfelus ?",
+      enfants:[
+        {
+          id:"3-1",
+          label:"Des codex vintage",
+          intro:"Une voie plus hasardeuse : fouiller Leboncoin à la recherche de codex et de livres d'armée anciens. Comptez le plus souvent entre 10 et 20 euros ; les pièces rares peuvent grimper, mais rarement au-delà de 30 euros.",
+          produits:[
+            {
+              nom:"Orcs et Gobelins 😍",
+              image:"Orcs_&_Goblins_8_Cover.jpg",
+              description:"",
+              lien:"https://whfb.lexicanum.com/wiki/File:Orcs_%26_Goblins_8_Cover.jpg",
+              note:"Lien référence image couverture de l'édition"
+            },
+            {
+              nom:"Elfes des bois 😍",
+              image:"439px-Wood_Elves_8_Cover_001.jpg",
+              description:"",
+              lien:"https://whfb.lexicanum.com/wiki/File:Wood_Elves_8_Cover_001.jpg",
+              note:"Lien référence image couverture de l'édition"
+            },
+            {
+              nom:"Elfes noirs",
+              image:"DE8thcover.png",
+              description:"",
+              lien:"https://whfb.lexicanum.com/wiki/File:DE8thcover.png",
+              note:"Lien référence image couverture de l'édition"
+            },
+            {
+              nom:"Comtes Vampires 😍",
+              image:"Vampire_Counts_8_Cover.jpg",
+              description:"",
+              lien:"https://whfb.lexicanum.com/wiki/File:Vampire_Counts_8_Cover.jpg",
+              note:"Lien référence image couverture de l'édition"
+            },
+            {
+              nom:"Orks 😍",
+              image:"7th-orkcodex.jpg",
+              description:"",
+              lien:"https://wh40k.lexicanum.com/wiki/File:7th-orkcodex.jpg",
+              note:"Lien référence image couverture de l'édition"
+            },
+            {
+              nom:"Black Templar 😍",
+              image:"Codex_Black_Tempelars_FCover.jpg",
+              description:"",
+              lien:"https://wh40k.lexicanum.com/wiki/File:Codex_Black_Tempelars_FCover.jpg",
+              note:"Lien référence image couverture de l'édition"
+            },
+            {
+              nom:"Space Wolves",
+              image:"Cover_Codex_Space_Wolves_5th_Edition.jpg",
+              description:"",
+              lien:"https://wh40k.lexicanum.com/wiki/File:Cover_Codex_Space_Wolves_5th_Edition.jpg",
+              note:"Lien référence image couverture de l'édition"
+            },
+          ]
+        },
+        {
+          id:"3-2",
+          label:"Livres Horus Heresy",
+          question:"Occasion, sur liseuse si ma princesse me la prête - ou neuf imprimé ?",
+          intro:"L'Hérésie d'Horus est un pilier de toute la mythologie de Warhammer 40 000 — un pan d'histoire qu'aucun peintre sérieux ne devrait ignorer. Un saut dans l'inconnu car je ne connais pas du tout ! A privilégier liseuse ou occasion.",
+          enfants:[
+            {
+              id:"3-2-1",
+              label:"Occasion via Leboncoin",
+              intro:"Même logique que pour les codex. Avec le petit plus de réutiliser un livre déjà imprimer !",
+              produits:[
+                {
+              nom:"L'Hérésie d'Horus - l'ascension d'Horus",
+              description:"Premier Tome de la saga, juste pour gouter.",
+              image:"Collection-I.jpg",
+              lien:"https://www.fnac.com/a2236507/Warhammer-40-000-The-Horus-heresy-Tome-1-L-ascension-d-Horus-Dan-Abnett",
+              note:"Lien pour illustration"}
+                ]
+            },
+            {
+              id:"3-2-2",
+              label:"Version liseuse (plus écologique à partir du moment où Lilie en a une et qu'elle sera mignonne)",
+              intro:"Aucun arbre sacrifié, aucune étagère supplémentaire à trouver : toute la saga tient dans une liseuse.",
+              produits:[
+                {
+                  nom:"L'Hérésie d'Horus — édition numérique",
+                  description:"L'intégrale, ou le tome de ton choix, au format numérique : de quoi dévorer la saga sans attendre la prochaine commande.",
+                  image:"Collection-I.jpg",
+                  lien:"https://www.fnac.com/livre-numerique/a14890985/Graham-McNeill-The-Horus-Heresy-Collection-I"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id:"3-3",
+          label:"Une figurine ? Oh non pas encore !",
+          citation:{
+            texte:"SI, plus de figurines !!! PLUSSSS !!! Yes-Yes !! Plus-Plus !! Oh non la tanière du petit peintre en est rempli !! Si !! Encore plus ! Yes-yes !",
+            auteur:"Réflexion d'un sage Skaven"
+          },
+          intro:"Une seule figurine, un personnage-héros unique, mérite qu'on lui consacre un vrai travail "+
+                "de peinture : patient, méticuleux, presque cérémonial. " + 
+                "Mais il faut une contrainte ! Si une figurine est proposée il faudra m'imposer " +
+                "l'ambiance (chaude, froide), le cadre (forestier, cimetière, ruine antique, ... ), " +
+                "trois couleurs. Pensez à trier par prix croissant pour sélectionner les personnages d'infanterie.",
+          produits:[
+            {
+              nom:"Personnages Orcs",
+              description:"Personnages interdits : Megaboss - Boss Karrach' sur Bête Faukarde - Vasoboss Skumdrekk. "+
+                          "Ces gars la ne font pas dans la finesse.",
+              image:"99070209005_WeirdNobShaman01.jpg",
+              lien:"https://www.warhammer.com/fr-FR/shop/age-of-sigmar/grand-alliance-destruction/orruk-warclans"
+            },
+            {
+              nom:"Personnages Morts Vivants",
+              description:"Personnages interdits : Abhorrant Archregent. Les morts-vivants ne sont jamais très courtois. " +
+              				  "Toujours un tronche d'enterrement le matin.",
+              image:"99120207206_SoulblightGravelordsNecromancer1.jpg",
+              lien:"https://www.warhammer.com/fr-FR/shop/age-of-sigmar/grand-alliance-death"
+            },
+            {
+              nom:"Personnage Grand Cathay",
+              description:"Défis 100 % peinture de fou - atmosphère magique et ésotérique Chine médiévale",
+              image:"99122720001_WHtOWGrandCathayShugenganLordonGreatSpiritLongmar01.jpg",
+              lien:"https://www.warhammer.com/fr-FR/shop/the-old-world/armies-of-the-old-world/grand-cathay"
+            },
+            {
+              nom:"Personnage des forces du Chaos",
+              description:"Ces petits gars ont vraiment l'air sympathiques",
+              image:"99070201004_WoCChaosLord01.jpg",
+              lien:"https://www.warhammer.com/fr-FR/shop/age-of-sigmar/grand-alliance-chaos/slaves-to-darkness"
+            },
+            {
+              nom:"Personnages Dark Eldar",
+              description:"Des elfes de l'espace avec des bouts pointus partout",
+              image:"99120112054_DRULadyMalys01.jpg",
+              lien:"https://www.warhammer.com/fr-FR/shop/warhammer-40000/xenos-armies/drukhari"
+            },
+          ]
+        },
+        {
+          id:"3-4",
+          label:"Ca va croquer chéri !",
+          intro:"VAMPIREEEEEE !! Chcrouuunch",
+          produits:[
+            {
+              nom:"The Blood of Dawnwalker",
+              image:"The Blood of Dawnwalker.jpg",
+              description:"Ce jeu me fait vraiment envie et créé par les anciens dev de The Witcher 3. Mais bon, déjà j'ai pas finis Baldur's Gate 3",
+              lien:"https://store.steampowered.com/app/3751260/The_Blood_of_Dawnwalker",
+            }
+          ]
+        },
+      ],
+    },
+    {id:"apprendre",
+      label:"Apprendre et comprendre l'art de la peinture",
+      intro:"Aujourd'hui la peinture artistique sur figurine est bien documentée. Il existe "+
+          		 "des Patreon pour prendre des cours et des livres. Il y a des notions théoriques pour "+
+          		 "bien comprendre le placement des lumières, les réflexions, les textures, les ambiances." + 
+          		 "Maitriser et ou à défaut connaitre ces techniques décuplerait les possibilités",
+      question:"Comment s'améliorer et comprendre les meilleurs peintres ?",
+          produits:[
+            {
+              nom:"Patreon de Jyrio 😍",
+              description:"Jyrio est peintre pro et donne des cours de peinture sur Twitch et via son Patreon.",
+              image:"jyrio.jpg",
+              lien:"https://www.patreon.com/cw/studiodelavida"
+            },
+            {
+              nom:"Encyclopedia of figure vol III 😍",
+              description:"De la lecture, des techniques de fou et des peintres de malade",
+              image:"encyclopedie-des-figurines-techniques-de-modelisme-vol-3-modelage-genres-et-techniques-speciales-100521_298x400.jpg",
+              lien:"https://www.figone.fr/encyclopedia-of-figure-vol-iii-french-version-mig-ammo/"
+            },
+            {
+              nom:"FIGOPEDIA",
+              description:"Encore de la lecture, des techniques de fou et des peintres de malade",
+              image:"indiegogo_figopedia.jpg",
+              lien:"https://www.figone.fr/figopedia-version-francaise/"
+            },
+           ],
+     },   
+    {
       id:"choix1",
       label:"Des peintures pour mettre de la couleur dans la vie",
+      intro:"L'option la plus mercantile. Si il y a achat je préfère passer par Sortilège Tours pour faire vivre cette boutique à laquelle je suis très attaché. Ne pas oublier de créditer les points sur mon compte.",
       question:"Quelle sera ta quête chromatique ?",
       enfants:[
         {
           id:"1-1",
           label:"De la couleur partout !!",
-          intro:"Je possède du Vallejo, entreprise espagnole responsable qui produit des peintures avec des pigments de qualité 'artiste' très fin. Malgré toutes ses qualités, cette peinture manque parfois de saturation et de punch. Alors Army Painter avec sa gamme Warpaint Fanatic est parfaite ! Cette entreprise Danois travaille avec une haute exigence environnementale avec des résines acrylique qui permettent une haute pigmentation. Comme cette gamme n'est pas dispo en physique à Tours, il faut se faire livrer et c'est pas terrible pour seulement 18 ml le pot. Alors j'ai pensé aux sets biens fournis suivants. C'est des liens affiliés MyHobbyPlace mais avec la référence la boutique sortilège se fera un plaisir de les commander.",
+          intro:"Je possède du Vallejo, entreprise espagnole responsable qui produit des peintures avec des pigments de qualité " + 
+          "'artiste' très fin. Malgré toutes ses qualités, cette peinture manque parfois de saturation et de punch. " + 
+          "Alors Army Painter avec sa gamme Warpaint Fanatic est parfaite ! Cette entreprise Danois travaille avec " + 
+          "une haute exigence environnementale avec des résines acrylique qui permettent une haute pigmentation. " + 
+          "Comme cette gamme n'est pas dispo en physique à Tours, il faut se faire livrer et c'est pas terrible " +
+          "pour seulement 18 ml le pot. Alors j'ai pensé aux sets biens fournis suivants. C'est des liens affiliés" + 
+          "MyHobbyPlace mais avec la référence la boutique Sortilège se fera un plaisir de les commander.",
           produits:[
             {
-              nom:"Army Painter Warpaints Fanatic — Mega PACKKKK",
+              nom:"Army Painter Warpaints Fanatic — Mega PACKKKK 😍",
               description:"Méga pack de ouffffffff !! on craque le slip jusqu'aux chausettes !!!",
               image:"warpaints-fanatic-mega-paint-set.png",
               lien:"https://myhobby.place/fr/5347-warpaints-fanatic-mega-paint-set.html"
             },
             {
-              nom:"Army Painter Warpaints Fanatic — coffret 'raisonnable trentenaire'",
+              nom:"Army Painter Warpaints Fanatic — coffret 'raisonnable trentenaire' 😍",
               description:"On craque le slip mais ça dépasse pas la couture",
               image:"warpaints-fanatic-most-wanted-paint-set.jpg",
               lien:"https://myhobby.place/fr/5376-warpaints-fanatic-most-wanted-paint-set.html"
@@ -400,174 +573,7 @@ const arbreDecision = {
         }
       ]
     },
-    {
-      id:"choix3",
-      label:"Nourrir l'imaginaire pour peindre",
-      intro:"L'univers de warhammer est si vaste et réparti sur plusieurs gammes de jeux : warhammer fantasy, warhammer 40 000, warhammer Horus Heresy. Nourrir l'imaginaire d'histoires, de photos d'armée, de héros épiques et intrépide est le meilleur moteur de création. Les jeux vidéos sont aussi ma première source d'inspiration, comme mélanger Warcraft, The Witcher dans une bataille Warhammer !",
-      question:"Comment nourrir l'imaginaire pour toujours plus de projets peinture farfelus ?",
-      enfants:[
-        {
-          id:"3-1",
-          label:"Des codex vintage",
-          intro:"Une voie plus hasardeuse : fouiller Leboncoin à la recherche de codex et de livres d'armée anciens. Comptez le plus souvent entre 10 et 20 euros ; les pièces rares peuvent grimper, mais rarement au-delà de 30 euros.",
-          produits:[
-            {
-              nom:"Orcs et Gobelins",
-              image:"Orcs_&_Goblins_8_Cover.jpg",
-              description:"",
-              lien:"https://whfb.lexicanum.com/wiki/File:Orcs_%26_Goblins_8_Cover.jpg",
-              note:"Lien référence image couverture de l'édition"
-            },
-            {
-              nom:"Elfes des bois",
-              image:"439px-Wood_Elves_8_Cover_001.jpg",
-              description:"",
-              lien:"https://whfb.lexicanum.com/wiki/File:Wood_Elves_8_Cover_001.jpg",
-              note:"Lien référence image couverture de l'édition"
-            },
-            {
-              nom:"Elfes noirs",
-              image:"DE8thcover.png",
-              description:"",
-              lien:"https://whfb.lexicanum.com/wiki/File:DE8thcover.png",
-              note:"Lien référence image couverture de l'édition"
-            },
-            {
-              nom:"Comtes Vampires",
-              image:"Vampire_Counts_8_Cover.jpg",
-              description:"",
-              lien:"https://whfb.lexicanum.com/wiki/File:Vampire_Counts_8_Cover.jpg",
-              note:"Lien référence image couverture de l'édition"
-            },
-            {
-              nom:"Orks",
-              image:"7th-orkcodex.jpg",
-              description:"",
-              lien:"https://wh40k.lexicanum.com/wiki/File:7th-orkcodex.jpg",
-              note:"Lien référence image couverture de l'édition"
-            },
-            {
-              nom:"Black Templar",
-              image:"Codex_Black_Tempelars_FCover.jpg",
-              description:"",
-              lien:"https://wh40k.lexicanum.com/wiki/File:Codex_Black_Tempelars_FCover.jpg",
-              note:"Lien référence image couverture de l'édition"
-            },
-            {
-              nom:"Space Wolves",
-              image:"Cover_Codex_Space_Wolves_5th_Edition.jpg",
-              description:"",
-              lien:"https://wh40k.lexicanum.com/wiki/File:Cover_Codex_Space_Wolves_5th_Edition.jpg",
-              note:"Lien référence image couverture de l'édition"
-            },
-          ]
-        },
-        {
-          id:"3-2",
-          label:"Livres Horus Heresy",
-          question:"Occasion, sur liseuse si ma princesse me la prête - ou neuf imprimé ?",
-          intro:"L'Hérésie d'Horus est un pilier de toute la mythologie de Warhammer 40 000 — un pan d'histoire qu'aucun peintre sérieux ne devrait ignorer. Un saut dans l'inconnu car je ne connais pas du tout ! A privilégier liseuse ou occasion.",
-          enfants:[
-            {
-              id:"3-2-1",
-              label:"Occasion via Leboncoin",
-              intro:"Même logique que pour les codex : la chasse aux volumes d'occasion, tome par tome.",
-              produits:[
-                {
-              nom:"L'Hérésie d'Horus - l'ascension d'Horus",
-              description:"Premier Tome de la saga, juste pour gouter.",
-              image:"Collection-I.jpg",
-              lien:"https://www.fnac.com/a2236507/Warhammer-40-000-The-Horus-heresy-Tome-1-L-ascension-d-Horus-Dan-Abnett",
-              note:"Lien pour illustration"}
-                ]
-            },
-            {
-              id:"3-2-2",
-              label:"Version liseuse (plus écologique à partir du moment où Lilie en a une et qu'elle sera mignonne)",
-              intro:"Aucun arbre sacrifié, aucune étagère supplémentaire à trouver : toute la saga tient dans une liseuse.",
-              produits:[
-                {
-                  nom:"L'Hérésie d'Horus — édition numérique",
-                  description:"L'intégrale, ou le tome de ton choix, au format numérique : de quoi dévorer la saga sans attendre la prochaine commande.",
-                  image:"Collection-I.jpg",
-                  lien:"https://www.fnac.com/livre-numerique/a14890985/Graham-McNeill-The-Horus-Heresy-Collection-I"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id:"3-3",
-          label:"Une figurine ? Oh non pas encore !",
-          citation:{
-            texte:"SI, plus de figurines !!! PLUSSSS !!! Yes-Yes !! Plus-Plus !! Oh non la tanière du petit peintre en est rempli !! Si !! Encore plus ! Yes-yes !",
-            auteur:"Réflexion d'un sage Skaven"
-          },
-          intro:"Et pourtant. Une seule figurine, un personnage-héros unique, mérite qu'on lui consacre un vrai travail de peinture : patient, méticuleux, presque cérémonial. Pour la gloire de la sainte peinture !!!",
-          produits:[
-            {
-              nom:"Personnages Orcs",
-              description:"Personnages interdits : Megaboss - Boss Karrach' sur Bête Faukarde - Vasoboss Skumdrekk",
-              image:"99070209005_WeirdNobShaman01.jpg",
-              lien:"https://www.warhammer.com/fr-FR/shop/age-of-sigmar/grand-alliance-destruction/orruk-warclans"
-            },
-            {
-              nom:"Personnages Morts Vivants",
-              description:"Personnages interdits : Abhorrant Archregent",
-              image:"99120207206_SoulblightGravelordsNecromancer1.jpg",
-              lien:"https://www.warhammer.com/fr-FR/shop/age-of-sigmar/grand-alliance-death"
-            },
-            {
-              nom:"Personnage Grand Cathay",
-              description:"Défis 100 % peinture de fou - atmosphère magique et ésotérique Chine médiévale",
-              image:"99122720001_WHtOWGrandCathayShugenganLordonGreatSpiritLongmar01.jpg",
-              lien:"https://www.warhammer.com/fr-FR/shop/the-old-world/armies-of-the-old-world/grand-cathay"
-            }
-          ]
-        },
-        {
-          id:"3-4",
-          label:"Ca va croquer chéri !",
-          intro:"VAMPIREEEEEE !! Chcrouuunch",
-          produits:[
-            {
-              nom:"The Blood of Dawnwalker",
-              image:"The Blood of Dawnwalker.jpg",
-              description:"Ce jeu me fait vraiment envie et créé par les anciens dev de The Witcher 3. Mais bon, déjà j'ai pas finis Baldur's Gate 3",
-              lien:"https://store.steampowered.com/app/3751260/The_Blood_of_Dawnwalker",
-            }
-          ]
-        }
-      ]
-    }
 
-    /* ==========================================================================
-       EXEMPLE POUR AJOUTER UNE NOUVELLE BRANCHE (à copier-coller au besoin)
-       Décommente et adapte le bloc ci-dessous, juste au-dessus de cette ligne,
-       en n'oubliant pas la virgule après le noeud "choix3" ci-dessus.
-       ==========================================================================
-    ,{
-      id:"choix4",
-      label:"Mon nouveau choix",
-      question:"Une nouvelle question ?",
-      enfants:[
-        {
-          id:"4-1",
-          label:"Premier sous-choix",
-          intro:"Un petit texte d'introduction (facultatif).",
-          produits:[
-            {
-              nom:"Nom du produit",
-              description:"Description courte du produit.",
-              image:"<IMAGE_9>",
-              lien:"<LIEN_AFFILIE_9>",
-              note:"Une remarque facultative (dispo en boutique, etc.)"
-            }
-          ]
-        }
-      ]
-    }
-    */
   ]
 };
 
@@ -630,9 +636,32 @@ function construireCarteProduit(produit){
     </article>`;
 }
 
+// Transforme un texte d'intro en une suite de paragraphes et d'illustrations.
+// Pour insérer une image au fil du texte, place son nom de fichier entre
+// chevrons directement dans la chaîne : "... un texte ... <mon-image.jpg> ... la suite ...".
+// Extensions reconnues : .png .jpg .jpeg .gif .webp .svg
+function construireContenuTexte(texte){
+  if (!texte) return "";
+  // découpe la chaîne en alternant : texte, nom d'image, texte, nom d'image, ...
+  const parties = String(texte).split(/<([^<>\s]+\.(?:png|jpe?g|gif|webp|svg))>/i);
+  let html = "";
+  parties.forEach((partie, index) => {
+    const estUneImage = index % 2 === 1; // les indices impairs sont les noms d'images capturés
+    if (estUneImage){
+      html += `<figure class="illustration-intro">
+        <img class="image-intro" data-src="images/${echapper(partie)}" alt="Illustration">
+      </figure>`;
+    } else {
+      const texteNettoye = partie.trim();
+      if (texteNettoye) html += `<p>${echapper(texteNettoye)}</p>`;
+    }
+  });
+  return html;
+}
+
 function construireBranche(noeud){
   let html = `<h2 class="question-courante" tabindex="-1">${echapper(noeud.question)}</h2>`;
-  if (noeud.intro) html += `<p class="intro-branche">${echapper(noeud.intro)}</p>`;
+  if (noeud.intro) html += construireContenuTexte(noeud.intro);
   html += '<ul class="liste-choix">';
   noeud.enfants.forEach((enfant, index) => {
     html += `<li><button type="button" class="tuile-choix" data-action="avancer" data-index="${index}">${echapper(enfant.label)}</button></li>`;
@@ -648,7 +677,7 @@ function construireFeuille(noeud){
     html += `<blockquote class="citation-skaven">${echapper(noeud.citation.texte)}<cite>— ${echapper(noeud.citation.auteur)}</cite></blockquote>`;
   }
   if (noeud.intro){
-    html += `<p>${echapper(noeud.intro)}</p>`;
+    html += construireContenuTexte(noeud.intro);
   }
   if (noeud.clinOeil){
     html += `<p class="clin-oeil">${echapper(noeud.clinOeil)}</p>`;
@@ -678,7 +707,7 @@ function construireFeuille(noeud){
 // Remplace chaque image par son placeholder illustré si le fichier est introuvable
 // (utile tant que tu n'as pas encore déposé tes propres visuels dans /images/).
 function chargerImages(conteneur){
-  conteneur.querySelectorAll(".produit-image").forEach(img => {
+  conteneur.querySelectorAll("img[data-src]").forEach(img => {
     img.addEventListener("error", () => {
       img.classList.add("image-manquante");
       img.src = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
